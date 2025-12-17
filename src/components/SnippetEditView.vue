@@ -102,7 +102,7 @@ export default {
             this.$eventBus.emit("server_error", null);
 
             this.saving = true;
-            this.$post('snippets/update', {
+            this.$ajax('post', 'fluent_snippet_update', {
                 fluent_saving_snippet_name: this.snippet_name,
                 meta: JSON.stringify({...this.snippet.meta, code: this.snippet.code}),
                 reactivate: reactivate

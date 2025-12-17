@@ -89,114 +89,176 @@
                         </el-popover>
                     </div>
                 </div>
-                <el-table
-                    v-if="viewType == 'table'"
-                    v-loading="loading"
-                    :data="snippets"
-                    :row-class-name="tableRowClassName"
-                    style="width: 100%"
-                    :empty-text="$t('No Snippets Found based on your filter')"
-                >
-                    <el-table-column width="80">
-                        <template #default="scope">
-                            <el-switch v-if="!scope.row.error" v-model="scope.row.status" active-value="published"
-                                       inactive-value="draft"
-                                       active-color="#13ce66" @change="updateSnippetStatus(scope.row)"></el-switch>
-                            <span v-else>{{ $t('Paused') }}</span>
-                        </template>
-                    </el-table-column>
 
-                    <el-table-column min-width="200px" :label="$t('Title')">
-                        <template #default="scope">
-                            <div class="snippet_name">
-                                <router-link class="edit_snippet_link"
-                                             :to="{ name: 'edit_snippet', params: { snippet_name: scope.row.file_name } }">
-                                    <span>{{ scope.row.name }}</span>
-                                </router-link>
-                                <el-tag v-if="!scope.row.error" style="margin-left: 10px;" size="small"
-                                        :type="(scope.row.status == 'published') ? 'success' : 'warning'">
-                                    {{ scope.row.status }}
-                                </el-tag>
-                                <el-tag v-else style="margin-left: 10px;" size="small" type="danger">{{ $t('ERROR') }}
-                                </el-tag>
-                            </div>
-                            <div class="snippet_actions">
-                                <router-link class="edit_snippet_link"
-                                             :to="{ name: 'edit_snippet', params: { snippet_name: scope.row.file_name } }">
-                                    {{ $t('edit') }}
-                                </router-link>
-                                <span class="fc_middot">|</span>
-                                <el-popconfirm width="220" @confirm="confirmDeleteSnippet(scope.row)"
-                                               :title="$t('Are you sure to delete this?')">
-                                    <template #reference>
-                                        <span class="fsnip_delete">{{ $t('delete') }}</span>
-                                    </template>
-                                </el-popconfirm>
-                                <template v-if="scope.row.group">
+                <div v-if="!loading">
+                    <el-table
+                        v-if="viewType == 'table'"
+                        v-loading="loading"
+                        :data="snippets"
+                        :row-class-name="tableRowClassName"
+                        style="width: 100%"
+                        :empty-text="$t('No Snippets Found based on your filter')"
+                    >
+                        <el-table-column width="80">
+                            <template #default="scope">
+                                <el-switch v-if="!scope.row.error" v-model="scope.row.status" active-value="published"
+                                           inactive-value="draft"
+                                           active-color="#13ce66" @change="updateSnippetStatus(scope.row)"></el-switch>
+                                <span v-else>{{ $t('Paused') }}</span>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column min-width="200px" :label="$t('Title')">
+                            <template #default="scope">
+                                <div class="snippet_name">
+                                    <router-link class="edit_snippet_link"
+                                                 :to="{ name: 'edit_snippet', params: { snippet_name: scope.row.file_name } }">
+                                        <span>{{ scope.row.name }}</span>
+                                    </router-link>
+                                    <el-tag v-if="!scope.row.error" style="margin-left: 10px;" size="small"
+                                            :type="(scope.row.status == 'published') ? 'success' : 'warning'">
+                                        {{ scope.row.status }}
+                                    </el-tag>
+                                    <el-tag v-else style="margin-left: 10px;" size="small" type="danger">{{ $t('ERROR') }}
+                                    </el-tag>
+                                </div>
+                                <div class="snippet_actions">
+                                    <router-link class="edit_snippet_link"
+                                                 :to="{ name: 'edit_snippet', params: { snippet_name: scope.row.file_name } }">
+                                        {{ $t('edit') }}
+                                    </router-link>
                                     <span class="fc_middot">|</span>
-                                    <span><el-icon><FolderOpened/></el-icon> {{ scope.row.group }}</span>
-                                </template>
-                                <span class="fc_middot">|</span>
-                                <span>
+                                    <el-popconfirm width="220" @confirm="confirmDeleteSnippet(scope.row)"
+                                                   :title="$t('Are you sure to delete this?')">
+                                        <template #reference>
+                                            <span class="fsnip_delete">{{ $t('delete') }}</span>
+                                        </template>
+                                    </el-popconfirm>
+                                    <template v-if="scope.row.group">
+                                        <span class="fc_middot">|</span>
+                                        <span><el-icon><FolderOpened/></el-icon> {{ scope.row.group }}</span>
+                                    </template>
+                                    <span class="fc_middot">|</span>
+                                    <span>
                                     <el-icon>
                                         <svg viewBox="0 0 8 8" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path
                                             d="M3 0l-3 5h2v3l3-5h-2v-3z" transform="translate(1)"></path></svg>
                                     </el-icon>
                                     {{ getRunAtName(scope.row.run_at) }}
                                 </span>
-                                <span class="fc_middot">|</span>
-                                <span style="cursor: pointer;" @click="exportSnippets([scope.row.file_name])">
+                                    <span class="fc_middot">|</span>
+                                    <span style="cursor: pointer;" @click="exportSnippets([scope.row.file_name])">
                                     <el-icon>
                                         <download />
                                     </el-icon>
                                     {{ $t('Download') }}
                                 </span>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column :label="$t('Description')" min-width="200">
-                        <template #default="scope">
-                            <span v-if="scope.row.error">{{ $t('ERROR:') }} {{ scope.row.error }}</span>
-                            <span v-else>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Description')" min-width="200">
+                            <template #default="scope">
+                                <span v-if="scope.row.error">{{ $t('ERROR:') }} {{ scope.row.error }}</span>
+                                <span v-else>
                                 {{ limitChars(scope.row.description, 100) }}
                             </span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column :label="$t('Type')" width="120">
-                        <template #default="scope">
+                            </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Type')" width="120">
+                            <template #default="scope">
                             <span v-if="scope.row.type" class="fsn_label" :class="'fsn_'+scope.row.type.toLowerCase()">
                                 {{ getLangLabelName(scope.row.type) }}
                             </span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column :label="$t('Tags')" width="200">
-                        <template #default="scope">
-                            {{ scope.row.tags }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column :label="$t('Updated At')" width="180">
-                        <template #default="scope">
-                            {{ relativeTimeFromUtc(scope.row.updated_at) }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column :label="$t('Priority')" width="80">
-                        <template #default="scope">
-                            {{ scope.row.priority }}
-                        </template>
-                    </el-table-column>
-                </el-table>
+                            </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Tags')" width="200">
+                            <template #default="scope">
+                                {{ scope.row.tags }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Updated At')" width="180">
+                            <template #default="scope">
+                                {{ relativeTimeFromUtc(scope.row.updated_at) }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column :label="$t('Priority')" width="80">
+                            <template #default="scope">
+                                {{ scope.row.priority }}
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div v-else-if="groupedSnippets" v-loading="loading" class="groups_snippets">
+                        <div v-for="(group, groupName) in groupedSnippets.groups" :key="groupName" class="fsnip_group">
+                            <div class="group_name">
+                                <el-icon @click="toggleGroupView(groupName)">
+                                    <FolderOpened v-if="!groupCollapsed[groupName]"/>
+                                    <FolderClosed v-else/>
+                                </el-icon>
+                                <span @click="toggleGroupView(groupName)">{{ group.label }}</span>
+                            </div>
+                            <ul v-if="!groupCollapsed[groupName]" class="group_files">
+                                <li v-for="snippet in group.snippets" :class="'fsnip_status_'+snippet.status"
+                                    :key="snippet.file_name" class="group_file">
+                                    <div
+                                        @click="$router.push({ name: 'edit_snippet', params: { snippet_name: snippet.file_name } })"
+                                        class="group_file_name">
+                                        <el-icon>
+                                            <Document/>
+                                        </el-icon>
+                                        {{ snippet.name }}
+                                        <template v-if="snippet.error">
+                                            <span style="background: red; color: white;" class="fsn_label">{{$t('Error:')}} </span>
+                                            <span style="margin-right: 10px; color: red;">
+                                            {{ limitChars(snippet.error, 100) }}
+                                        </span>
+                                        </template>
+                                        <span v-else class="fsn_label" :class="'fsn_'+snippet.type.toLowerCase()">
+                                            {{ getLangLabelName(snippet.type) }}
+                                    </span>
+                                        <span class="fsn_label">
+                                        <el-icon>
+                                                <svg viewBox="0 0 8 8" fill="currentColor"
+                                                     xmlns="http://www.w3.org/2000/svg"><path
+                                                    d="M3 0l-3 5h2v3l3-5h-2v-3z" transform="translate(1)"></path></svg>
+                                        </el-icon>
+                                        {{ getRunAtName(snippet.run_at) }}
+                                    </span>
+                                    </div>
+                                    <div class="group_file_meta">
+                                        <div class="snippet_actions">
+                                        <span :title="$t('Updated At:') + ' '"><el-icon><Stopwatch/></el-icon> {{
+                                                relativeTimeFromUtc(snippet.updated_at)
+                                            }}</span>
+                                            <span class="fc_middot">|</span>
+                                            <el-popconfirm width="220" @confirm="confirmDeleteSnippet(snippet)"
+                                                           :title="$t('Are you sure to delete this?')">
+                                                <template #reference>
+                                                    <span class="fsnip_delete">{{ $t('delete') }}</span>
+                                                </template>
+                                            </el-popconfirm>
+                                            <span class="fc_middot">|</span>
+                                            <span style="cursor: pointer;" @click="exportSnippets([snippet.file_name])">
+                                            <el-icon>
+                                                <download />
+                                            </el-icon>
+                                            {{ $t('Download') }}
+                                        </span>
 
-                <div v-else-if="groupedSnippets" v-loading="loading" class="groups_snippets">
-                    <div v-for="(group, groupName) in groupedSnippets.groups" :key="groupName" class="fsnip_group">
-                        <div class="group_name">
-                            <el-icon @click="toggleGroupView(groupName)">
-                                <FolderOpened v-if="!groupCollapsed[groupName]"/>
-                                <FolderClosed v-else/>
-                            </el-icon>
-                            <span @click="toggleGroupView(groupName)">{{ group.label }}</span>
+                                            <span class="fc_middot">|</span>
+                                            <span v-if="!snippet.error">
+                                            <el-switch size="small" v-model="snippet.status" active-value="published"
+                                                       inactive-value="draft"
+                                                       active-color="#13ce66"
+                                                       @change="updateSnippetStatus(snippet)"></el-switch>
+                                            {{ snippet.status }}
+                                        </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <ul v-if="!groupCollapsed[groupName]" class="group_files">
-                            <li v-for="snippet in group.snippets" :class="'fsnip_status_'+snippet.status"
+                        <ul v-if="groupedSnippets.roots.length" class="group_files roots_files">
+                            <li v-for="snippet in groupedSnippets.roots" :class="'fsnip_status_'+snippet.status"
                                 :key="snippet.file_name" class="group_file">
                                 <div
                                     @click="$router.push({ name: 'edit_snippet', params: { snippet_name: snippet.file_name } })"
@@ -206,28 +268,32 @@
                                     </el-icon>
                                     {{ snippet.name }}
                                     <template v-if="snippet.error">
-                                        <span style="background: red; color: white;" class="fsn_label">{{$t('Error:')}} </span>
-                                        <span style="margin-right: 10px; color: red;">
-                                            {{ limitChars(snippet.error, 100) }}
-                                        </span>
+                                    <span style="background: red; color: white;"
+                                          class="fsn_label">{{ $t('Error:') }} </span>
+                                        <span
+                                            style="margin-right: 10px; color: red;">{{
+                                                limitChars(snippet.error, 100)
+                                            }}</span>
                                     </template>
                                     <span v-else class="fsn_label" :class="'fsn_'+snippet.type.toLowerCase()">
-                                            {{ getLangLabelName(snippet.type) }}
-                                    </span>
+                                        {{ getLangLabelName(snippet.type) }}
+                                </span>
                                     <span class="fsn_label">
-                                        <el-icon>
-                                                <svg viewBox="0 0 8 8" fill="currentColor"
-                                                     xmlns="http://www.w3.org/2000/svg"><path
-                                                    d="M3 0l-3 5h2v3l3-5h-2v-3z" transform="translate(1)"></path></svg>
-                                        </el-icon>
-                                        {{ getRunAtName(snippet.run_at) }}
-                                    </span>
+                                    <el-icon>
+                                            <svg viewBox="0 0 8 8" fill="currentColor"
+                                                 xmlns="http://www.w3.org/2000/svg"><path
+                                                d="M3 0l-3 5h2v3l3-5h-2v-3z" transform="translate(1)"></path></svg>
+                                    </el-icon>
+                                    {{ getRunAtName(snippet.run_at) }}
+                                </span>
                                 </div>
                                 <div class="group_file_meta">
                                     <div class="snippet_actions">
-                                        <span :title="$t('Updated At:') + ' '"><el-icon><Stopwatch/></el-icon> {{
-                                                relativeTimeFromUtc(snippet.updated_at)
-                                            }}</span>
+                                    <span v-if="!snippet.error"
+                                          style="margin-right: 10px;">{{ limitChars(snippet.description, 50) }}</span>
+                                        <span :title="$t('Updated At:')"><el-icon><Stopwatch/></el-icon>
+                                        {{ relativeTimeFromUtc(snippet.updated_at) }}
+                                    </span>
                                         <span class="fc_middot">|</span>
                                         <el-popconfirm width="220" @confirm="confirmDeleteSnippet(snippet)"
                                                        :title="$t('Are you sure to delete this?')">
@@ -237,112 +303,51 @@
                                         </el-popconfirm>
                                         <span class="fc_middot">|</span>
                                         <span style="cursor: pointer;" @click="exportSnippets([snippet.file_name])">
-                                            <el-icon>
-                                                <download />
-                                            </el-icon>
-                                            {{ $t('Download') }}
-                                        </span>
-
-                                        <span class="fc_middot">|</span>
-                                        <span v-if="!snippet.error">
-                                            <el-switch size="small" v-model="snippet.status" active-value="published"
-                                                       inactive-value="draft"
-                                                       active-color="#13ce66"
-                                                       @change="updateSnippetStatus(snippet)"></el-switch>
-                                            {{ snippet.status }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <ul v-if="groupedSnippets.roots.length" class="group_files roots_files">
-                        <li v-for="snippet in groupedSnippets.roots" :class="'fsnip_status_'+snippet.status"
-                            :key="snippet.file_name" class="group_file">
-                            <div
-                                @click="$router.push({ name: 'edit_snippet', params: { snippet_name: snippet.file_name } })"
-                                class="group_file_name">
-                                <el-icon>
-                                    <Document/>
-                                </el-icon>
-                                {{ snippet.name }}
-                                <template v-if="snippet.error">
-                                    <span style="background: red; color: white;"
-                                          class="fsn_label">{{ $t('Error:') }} </span>
-                                    <span
-                                        style="margin-right: 10px; color: red;">{{
-                                            limitChars(snippet.error, 100)
-                                        }}</span>
-                                </template>
-                                <span v-else class="fsn_label" :class="'fsn_'+snippet.type.toLowerCase()">
-                                        {{ getLangLabelName(snippet.type) }}
-                                </span>
-                                <span class="fsn_label">
-                                    <el-icon>
-                                            <svg viewBox="0 0 8 8" fill="currentColor"
-                                                 xmlns="http://www.w3.org/2000/svg"><path
-                                                d="M3 0l-3 5h2v3l3-5h-2v-3z" transform="translate(1)"></path></svg>
-                                    </el-icon>
-                                    {{ getRunAtName(snippet.run_at) }}
-                                </span>
-                            </div>
-                            <div class="group_file_meta">
-                                <div class="snippet_actions">
-                                    <span v-if="!snippet.error"
-                                          style="margin-right: 10px;">{{ limitChars(snippet.description, 50) }}</span>
-                                    <span :title="$t('Updated At:')"><el-icon><Stopwatch/></el-icon>
-                                        {{ relativeTimeFromUtc(snippet.updated_at) }}
-                                    </span>
-                                    <span class="fc_middot">|</span>
-                                    <el-popconfirm width="220" @confirm="confirmDeleteSnippet(snippet)"
-                                                   :title="$t('Are you sure to delete this?')">
-                                        <template #reference>
-                                            <span class="fsnip_delete">{{ $t('delete') }}</span>
-                                        </template>
-                                    </el-popconfirm>
-                                    <span class="fc_middot">|</span>
-                                    <span style="cursor: pointer;" @click="exportSnippets([snippet.file_name])">
                                         <el-icon>
                                             <download />
                                         </el-icon>
                                         {{ $t('Download') }}
                                     </span>
-                                    <span class="fc_middot">|</span>
-                                    <span>
+                                        <span class="fc_middot">|</span>
+                                        <span>
                                         <el-switch v-if="!snippet.error" size="small" v-model="snippet.status"
                                                    active-value="published" inactive-value="draft"
                                                    active-color="#13ce66"
                                                    @change="updateSnippetStatus(snippet)"></el-switch>
                                         {{ snippet.status }}
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div v-if="!snippets || !snippets.length">
-                        <div class="box_body">
-                            <div style="padding: 20px 0; text-align: center;">
-                                <p style="margin-bottom: 20px;">{{$t('Sorry, no snippets found based on your filter.')}}</p>
+                            </li>
+                        </ul>
+                        <div v-if="!snippets || !snippets.length">
+                            <div class="box_body">
+                                <div style="padding: 20px 0; text-align: center;">
+                                    <p style="margin-bottom: 20px;">{{$t('Sorry, no snippets found based on your filter.')}}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <el-row style="margin-top: 20px; padding: 0 15px;" :gutter="30">
-                    <el-col :md="12" :xs="24">
+                    <el-row style="margin-top: 20px; padding: 0 15px;" :gutter="30">
+                        <el-col :md="12" :xs="24">
 
-                    </el-col>
-                    <el-col :md="12" :xs="24">
-                        <div class="fql_pagi text-align-right" style="float: right;">
-                            <el-pagination @current-change="changePage"
-                                           :hide-on-single-page="true"
-                                           :current-page="paginate.page"
-                                           :page-size="paginate.per_page"
-                                           background layout="total, prev, pager, next"
-                                           :total="paginate.total"
-                            />
-                        </div>
-                    </el-col>
-                </el-row>
+                        </el-col>
+                        <el-col :md="12" :xs="24">
+                            <div class="fql_pagi text-align-right" style="float: right;">
+                                <el-pagination @current-change="changePage"
+                                               :hide-on-single-page="true"
+                                               :current-page="paginate.page"
+                                               :page-size="paginate.per_page"
+                                               background layout="total, prev, pager, next"
+                                               :total="paginate.total"
+                                />
+                            </div>
+                        </el-col>
+                    </el-row>
+                </div>
+                <div v-else class="box_body">
+                    <el-skeleton :rows="10" animated animation="wave"/>
+                </div>
             </div>
         </div>
 
@@ -519,8 +524,11 @@ export default {
                     this.$handleError(errors);
                 })
                 .finally(() => {
-                    this.getSnippets();
-                })
+                    this.loading = true;
+                    setTimeout(() => {
+                        this.getSnippets();
+                    }, 2000);
+                });
         },
         getRunAtName(runAt) {
             const trans = {

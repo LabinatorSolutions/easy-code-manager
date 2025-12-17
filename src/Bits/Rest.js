@@ -37,6 +37,21 @@ export default {
     },
     patch(route, data = {}) {
         return request('PATCH', route, data);
+    },
+    ajax(method, action, data = {}) {
+        return new Promise((resolve, reject) => {
+            data.query_timestamp = Date.now();
+            data.action = action;
+            data.__nonce = window.fluentSnippetAdmin.nonce;
+
+            window.jQuery.ajax({
+                url: window.fluentSnippetAdmin.ajax_url,
+                type: method,
+                data: data
+            })
+                .then(response => resolve(response))
+                .fail(errors => reject(errors.responseJSON));
+        });
     }
 };
 

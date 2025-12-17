@@ -99,7 +99,7 @@ export default {
             }
 
             this.saving = true;
-            this.$post('snippets/create', {
+            this.$ajax('post', 'fluent_snippet_create', {
                 meta: JSON.stringify({...this.snippet.meta, code: this.snippet.code})
             })
                 .then(response => {

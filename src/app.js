@@ -53,6 +53,7 @@ app.mixin({
         $post: Rest.post,
         $put: Rest.put,
         $del: Rest.delete,
+        $ajax: Rest.ajax,
         changeTitle(title) {
             jQuery('head title').text(title + ' - FluentSnippets');
         },

@@ -333,7 +333,7 @@ class Snippet
         $snippetDir = Helper::getStorageDir();
         $file = $snippetDir . '/' . $fileName;
 
-        if (!is_file($file) && $fileName === 'index.php') {
+        if (!is_file($file) && ($fileName === 'index.php' || $fileName === 'cached')) {
             return new \WP_Error('file_not_found', 'File not found');
         }
 
